@@ -62,7 +62,6 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 
-
 @Composable
 fun ProfilScreen(
     navController: NavController,
@@ -73,13 +72,12 @@ fun ProfilScreen(
     val nama by UserPreferences.getNama(context = context).collectAsState(initial = "Lidia")
     val email by UserPreferences.getEmail(context = context).collectAsState(initial = "Sola")
     val channel_name by UserPreferences.getNoTelp(context = context).collectAsState(initial = "123")
-
     val token by UserPreferences.getToken(context = context).collectAsState(initial = "")
 
     val logOutState by viewModel.logoutState.collectAsState()
 
     LaunchedEffect(logOutState) {
-        logOutState?.let {result ->
+        logOutState?.let { result ->
             if (result.isSuccess) {
                 navController.navigate("Login")
             } else {
@@ -92,11 +90,36 @@ fun ProfilScreen(
         }
     }
 
+    ProfilContent(
+        navController = navController,
+        nama = nama ?: "-",
+        email = email ?: "-",
+        channelName = channel_name ?: "-",
+        onLogoutClick = {
+            token?.let { viewModel.logout(context, it) }
+            Log.d("LogoutDebug", "Token: $token")
+        }
+    )
+}
+
+// ====================================================
+// CORE VIEW CONTENT (SINGLE SOURCE OF TRUTH)
+// ====================================================
+
+@Composable
+fun ProfilContent(
+    navController: NavController,
+    nama: String,
+    email: String,
+    channelName: String,
+    onLogoutClick: () -> Unit
+) {
+    val context = LocalContext.current
+
     MainScaffold(
         navController = navController,
         currentRoute = "profil"
-    ) {
-        paddingValues ->
+    ) { paddingValues ->
 
         val scrollState = rememberScrollState()
 
@@ -186,17 +209,15 @@ fun ProfilScreen(
                     .padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                nama?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF003049)
-                        )
-                    )
-                }
                 Text(
-                    text = "$email | $channel_name",
+                    text = nama,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF003049)
+                    )
+                )
+                Text(
+                    text = "$email | $channelName",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -210,8 +231,8 @@ fun ProfilScreen(
                         Icons.Default.Person to "Edit informasi profil",
                         Icons.Default.Group to "Informasi Anggota Keluarga"
                     ),
-                    onClick = {
-                        when (it) {
+                    onClick = { menuTitle ->
+                        when (menuTitle) {
                             "Edit informasi profil" -> navController.navigate("edit-profile")
                             "Informasi Anggota Keluarga" -> navController.navigate("profil-anggota")
                         }
@@ -226,8 +247,8 @@ fun ProfilScreen(
                         Icons.AutoMirrored.Filled.HelpOutline to "FAQ",
                         Icons.Default.Headset to "Help Desk"
                     ),
-                    onClick = {
-                        when (it) {
+                    onClick = { menuTitle ->
+                        when (menuTitle) {
                             "Pengaturan Akun" -> navController.navigate("pengaturan")
                             "FAQ" -> navController.navigate("FAQ")
                             "Help Desk" -> navController.navigate("Help-Desk")
@@ -235,30 +256,12 @@ fun ProfilScreen(
                     }
                 )
 
-//                Spacer(modifier = Modifier.height(16.dp))
-//                ProfileMenuItem(
-//                    icon = Icons.Default.Person,
-//                    text = "Edit informasi profil",
-//                    onClick = {
-//                        navController.navigate("edit-profile")
-//                    }
-//                )
-//                Spacer(modifier = Modifier.height(12.dp))
-//                ProfileMenuItem(
-//                    icon = Icons.Default.Lock,
-//                    text = "Pengaturan Akun",
-//                    onClick = {
-//                        navController.navigate("pengaturan")
-//                    }
-//                )
                 Spacer(modifier = Modifier.height(24.dp))
+
                 ProfileMenuItem(
                     icon = Icons.Default.ExitToApp,
                     text = "Keluar",
-                    onClick = {
-                        token?.let { viewModel.logout(context, it) }
-                        Log.d("LogoutDebug", "Token: $token")
-                    }
+                    onClick = onLogoutClick
                 )
 
                 Spacer(modifier = Modifier.height(34.dp))
@@ -267,9 +270,12 @@ fun ProfilScreen(
     }
 }
 
+// ====================================================
+// REUSABLE ATOMIC UI COMPONENTS
+// ====================================================
+
 @Composable
 fun ProfileMenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -277,7 +283,6 @@ fun ProfileMenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
             .background(Color(0xFFF8F9FA))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                // ✨ Menggunakan API ripple() baru dari Material 3
                 indication = ripple(color = Color.Gray)
             ) { onClick() }
             .padding(16.dp),
@@ -298,6 +303,7 @@ fun ProfileMenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
         )
     }
 }
+
 @Composable
 fun ProfileMenuSection(items: List<Pair<ImageVector, String>>, onClick: (String) -> Unit) {
     Column(
@@ -322,10 +328,19 @@ fun ProfileMenuSection(items: List<Pair<ImageVector, String>>, onClick: (String)
     }
 }
 
+// ====================================================
+// PREVIEW
+// ====================================================
 
-
-@Preview(showBackground = true)
+@Preview(name = "Profile Screen - Preview Mode", showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewProfilScreen() {
-//    ProfilScreen()
+    val fakeNavController = androidx.navigation.compose.rememberNavController()
+    ProfilContent(
+        navController = fakeNavController,
+        nama = "Lidia Sola",
+        email = "lidiasola@streamer.com",
+        channelName = "LidiaSola_Gaming",
+        onLogoutClick = {}
+    )
 }

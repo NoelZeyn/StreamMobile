@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.stream.Data.Local.UserPreferences
 import com.example.stream.Data.Model.Response.PortalBeritaItem
-import com.example.stream.ui.Screen.Login.JadwalKosongCard
+import com.example.stream.ui.Screen.Dashboard.ScheduleEmptyCard
 import com.example.stream.ui.Screen.components.MainScaffold
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -71,7 +71,7 @@ fun PortalBeritaScreen(
         navController = navController,
         currentRoute = "berita"
     ) {
-        paddingValues ->
+            paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,7 +108,7 @@ fun PortalBeritaScreen(
                     CircularProgressIndicator()
                 }
                 is UiState.Error -> {
-                    JadwalKosongCard()
+                    ScheduleEmptyCard()
                 }
                 is UiState.Success<*> -> {
                     val data = (uiState as UiState.Success<List<PortalBeritaItem>>).data

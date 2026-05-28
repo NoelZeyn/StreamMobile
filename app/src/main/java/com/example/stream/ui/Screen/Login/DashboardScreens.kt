@@ -1,16 +1,23 @@
 package com.example.stream.ui.Screen.Dashboard
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,10 +25,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.stream.Data.Local.UserPreferences
+import com.example.stream.Data.Model.Response.PortalBeritaItem
+import com.example.stream.ui.Screen.Berita.JadwalMingguIniSection
+import com.example.stream.ui.Screen.Berita.PortalBeritaViewModel
+import com.example.stream.ui.Screen.Berita.UiState
+import com.example.stream.ui.Screen.Berita.formatTanggalIndonesia
+import com.example.stream.ui.Screen.Profile.GetProfileState
+import com.example.stream.ui.Screen.Profile.PosyanduState
+import com.example.stream.ui.Screen.Profile.ProfilViewModel
+import com.example.stream.ui.Screen.components.MainScaffold
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreens(navController: NavController) {
+fun DashboardScreens(    navController: NavController,
+) {
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -104,6 +125,7 @@ fun DashboardScreens(navController: NavController) {
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

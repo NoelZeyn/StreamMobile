@@ -16,6 +16,7 @@ import com.example.stream.Data.Model.Response.Antrian
 import com.example.stream.Data.Model.Response.BeritaDetailResponse
 import com.example.stream.Data.Model.Response.DaftarAntrianResponse
 import com.example.stream.Data.Model.Response.DataResponse
+import com.example.stream.Data.Model.Response.LiveScheduleResponse
 import com.example.stream.Data.Model.Response.LoginResponse
 import com.example.stream.Data.Model.Response.PemeriksaanResponse
 import com.example.stream.Data.Model.Response.PortalBeritaResponse
@@ -26,6 +27,7 @@ import com.example.stream.Data.Model.Response.PosyanduDetailResponse
 import com.example.stream.Data.Model.Response.PosyanduItem
 import com.example.stream.Data.Model.Response.PosyanduResponse
 import com.example.stream.Data.Model.Response.RegisterResponse
+import com.example.stream.Data.Model.Response.ScheduleResponse
 import com.example.stream.Data.Model.Response.UpdateEmailResponse
 import com.example.stream.Data.Model.Response.UpdatePasswordResponse
 import com.example.stream.Data.Model.Response.WargaResponse
@@ -52,6 +54,20 @@ interface ApiService {
 
     @POST("api/v1/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
+
+    @GET("api/v1/schedules")
+    suspend fun getSchedules(
+        @Query("user_id") userId: Int,
+        @Query("page") page: Int = 1
+    ): Response<ScheduleResponse>
+
+    @GET("api/v1/schedules/live")
+    suspend fun getLive(
+        @Query("user_id") userId: Int
+    ): Response<LiveScheduleResponse>
+
+    @GET("api/v1/profile")
+    suspend fun getProfile(): Response<ProfileResponse>
 
     @POST("api/auth/warga/anggota")
     suspend fun anggotaKeluarga(@Body request: AnggotaKeluargaRequest): Response<AnggotaKeluargaRequest>

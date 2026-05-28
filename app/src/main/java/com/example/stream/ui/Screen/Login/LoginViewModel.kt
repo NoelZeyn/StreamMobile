@@ -82,7 +82,6 @@ class LoginViewModel : ViewModel() {
 
                         _loginState.value = LoginState.Success(token = loginResponse.access_token)
                     } else {
-                        // Jika server merespon 200 tetapi field status lain (gagal)
                         val msg = loginResponse?.message ?: "Gagal masuk ke sistem"
                         _loginState.value = LoginState.Error(msg)
                         _errorMessage.value = msg
@@ -116,7 +115,6 @@ class LoginViewModel : ViewModel() {
     }
 }
 
-// Sealed class untuk mengontrol state UI di LoginScreen.kt
 sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()

@@ -29,10 +29,6 @@ fun UbahEmailScreen(
     navController: NavController,
     viewModel: ProfilViewModel
 ) {
-    var emailBaru by remember { mutableStateOf("") }
-    var emailSekarang by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
     val updateEmailState = viewModel.updateEmailState
     val context = LocalContext.current
     val token by UserPreferences.getToken(context).collectAsState(initial = "")
@@ -51,6 +47,44 @@ fun UbahEmailScreen(
             else -> {}
         }
     }
+
+    UbahEmailContent(
+        navController = navController,
+        updateEmailState = updateEmailState,
+        onSimpanClick = { emailBaru, emailSekarang, password ->
+            if (!token.isNullOrEmpty()) {
+                val bearerToken = "Bearer $token"
+                val request = UpdateEmailRequest(
+                    email_baru = emailBaru,
+                    email_sekarang = emailSekarang,
+                    password = password
+                )
+                if (id != null && id != 0) {
+                    viewModel.updateEmail(request, id!!, bearerToken)
+                }
+            }
+        },
+        onResetState = {
+            viewModel.resetState()
+        }
+    )
+}
+
+// ====================================================
+// CORE VIEW CONTENT (SINGLE SOURCE OF TRUTH)
+// ====================================================
+
+@Composable
+fun UbahEmailContent(
+    navController: NavController,
+    updateEmailState: UpdateEmailState, // Asumsi nama kelas State-mu adalah ini
+    onSimpanClick: (String, String, String) -> Unit,
+    onResetState: () -> Unit
+) {
+    var emailBaru by remember { mutableStateOf("") }
+    var emailSekarang by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -96,12 +130,10 @@ fun UbahEmailScreen(
             value = emailSekarang,
             onValueChange = { emailSekarang = it },
             placeholder = { Text("Masukkan email saat ini") },
-//            readOnly = true,
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(0xFFE5E5EA),
                 focusedContainerColor = Color(0xFFE5E5EA)
             ),
-//            enabled = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -136,8 +168,6 @@ fun UbahEmailScreen(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        var passwordVisible by remember { mutableStateOf(false) }
-
         Text(
             text = "Kata Sandi",
             fontWeight = FontWeight.Medium,
@@ -167,20 +197,7 @@ fun UbahEmailScreen(
 
         // Tombol Simpan & Batal
         Button(
-            onClick = {
-                if (!token.isNullOrEmpty()) {
-                    val userId = id
-                    val bearerToken = "Bearer $token"
-                    val request = UpdateEmailRequest(
-                        email_baru = emailBaru,
-                        email_sekarang = emailSekarang,
-                        password = password
-                    )
-                    if (userId != null) {
-                        viewModel.updateEmail(request, userId, bearerToken)
-                    }
-                }
-            },
+            onClick = { onSimpanClick(emailBaru, emailSekarang, password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -203,26 +220,50 @@ fun UbahEmailScreen(
             Text("Batal", fontWeight = FontWeight.Bold)
         }
 
+        // Handle State visual feedback di bawah tombol
         when(updateEmailState) {
             is UpdateEmailState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF005B71))
+                }
             }
             is UpdateEmailState.Success -> {
                 LaunchedEffect(Unit) {
-                    viewModel.resetState()
+                    onResetState()
                 }
-                Text("Berhasil memperbarui email!", color = Color.Green)
+                Text(
+                    text = "Berhasil memperbarui email!",
+                    color = Color(0xFF2E7D32),
+                    modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally)
+                )
             }
             is UpdateEmailState.Error -> {
-                Text("Error: ${(updateEmailState as UpdateEmailState.Error).message}", color = Color.Red)
+                Text(
+                    text = "Error: ${updateEmailState.message}",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally)
+                )
             }
             else -> {}
         }
     }
 }
 
-@Preview(showBackground = true)
+// ====================================================
+// PREVIEW
+// ====================================================
+
+@Preview(name = "Ubah Email Screen - Normal State", showBackground = true, showSystemUi = true)
 @Composable
 fun UbahEmailScreenPreview() {
-//    UbahEmailScreen()
+    val fakeNavController = androidx.navigation.compose.rememberNavController()
+    UbahEmailContent(
+        navController = fakeNavController,
+        updateEmailState = UpdateEmailState.Idle,
+        onSimpanClick = { _, _, _ -> },
+        onResetState = {}
+    )
 }

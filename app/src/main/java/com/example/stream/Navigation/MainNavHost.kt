@@ -22,7 +22,9 @@ import com.example.stream.ui.Screen.Berita.PortalBeritaRepository
 import com.example.stream.ui.Screen.Berita.PortalBeritaScreen
 import com.example.stream.ui.Screen.Berita.PortalBeritaViewModel
 import com.example.stream.ui.Screen.Berita.PortalBeritaViewModelFactory
+import com.example.stream.ui.Screen.Dashboard.DashboardScreen
 import com.example.stream.ui.Screen.Dashboard.DashboardScreens
+import com.example.stream.ui.Screen.Dashboard.DashboardViewModel
 import com.example.stream.ui.Screen.EKMS.EKMSBalitaScreen
 import com.example.stream.ui.Screen.EKMS.EKMSRepository
 import com.example.stream.ui.Screen.EKMS.EKMSScreen
@@ -30,7 +32,7 @@ import com.example.stream.ui.Screen.EKMS.EKMSViewModel
 import com.example.stream.ui.Screen.EKMS.EKMSViewModelFactory
 import com.example.stream.ui.Screen.EKMS.InformasiPerkembanganBalitaScreen
 import com.example.stream.ui.Screen.Login.LoginScreen
-import com.example.stream.ui.Screen.Login.LoginScreenTest
+//import com.example.stream.ui.Screen.Login.LoginScreenTest
 import com.example.stream.ui.Screen.Login.LoginViewModel
 import com.example.stream.ui.Screen.PortalPeriksa.PemeriksaanBalitaScreen
 import com.example.stream.ui.Screen.PortalPeriksa.PortalPeriksaScreen
@@ -103,15 +105,19 @@ fun MainNavHost(navController: NavHostController = rememberNavController()) {
             DashboardScreens(navController = navController) // Panggil dashboard mini percobaan login di sini
         }
         composable("dashboard") {
-            val beritaRepository = PortalBeritaRepository()
-            val beritaFactory = PortalBeritaViewModelFactory(beritaRepository)
-            val beritaViewModel: PortalBeritaViewModel = viewModel(factory = beritaFactory)
+            val profileRepository = ProfileRepository()
+            val profileFactory = ProfileViewModelFactory(profileRepository)
+            val profilViewModel: ProfilViewModel = viewModel(factory = profileFactory)
 
-            val repository = ProfileRepository()
-            val factory = ProfileViewModelFactory(repository)
-            val viewModel: ProfilViewModel = viewModel(factory = factory)
+            // 2. Siapkan DashboardViewModel (Sesuaikan jika dashboard-mu pakai factory juga)
+            val dashboardViewModel: DashboardViewModel = viewModel()
 
-            LoginScreenTest(navController = navController, portalBeritaViewModel = beritaViewModel, profilViewModel = viewModel)
+            // 3. Panggil DashboardScreen yang asli dengan parameter lengkap
+            DashboardScreen(
+                navController = navController,
+                profilViewModel = profilViewModel,
+                dashboardViewModel = dashboardViewModel
+            )
         }
         composable("portal-periksa") {backStackEntry ->
             val repository = PortalPeriksaRepository()
