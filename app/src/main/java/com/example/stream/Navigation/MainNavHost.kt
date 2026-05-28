@@ -4,6 +4,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -61,6 +63,7 @@ import com.example.stream.ui.Screen.onBoarding.OnBoardingScreen
 fun MainNavHost(navController: NavHostController = rememberNavController()) {
     val registerViewModel: RegisterViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val anggotaViewModel: AnggotaKeluargaViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val loginViewModel: LoginViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     NavHost(navController = navController, startDestination = "landing-page") {
         composable("landing-page") {
@@ -99,23 +102,28 @@ fun MainNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
         composable("Login") {
-            LoginScreen(navController = navController, viewModel = LoginViewModel())
+            LoginScreen(navController = navController, loginViewModel)
         }
         composable("dashboards") {
             DashboardScreens(navController = navController) // Panggil dashboard mini percobaan login di sini
         }
         composable("dashboard") {
-            val profileRepository = ProfileRepository()
-            val profileFactory = ProfileViewModelFactory(profileRepository)
-            val profilViewModel: ProfilViewModel = viewModel(factory = profileFactory)
-
+//            val profileRepository = ProfileRepository()
+//            val profileFactory = ProfileViewModelFactory(profileRepository)
+//            val profilViewModel: ProfilViewModel = viewModel(factory = profileFactory)
+            val apiService = com.example.stream.Data.Remote.Client.ApiClient.apiService
             // 2. Siapkan DashboardViewModel (Sesuaikan jika dashboard-mu pakai factory juga)
-            val dashboardViewModel: DashboardViewModel = viewModel()
-
+            val dashboardViewModel: DashboardViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        return DashboardViewModel(apiService) as T
+                    }
+                }
+            )
             // 3. Panggil DashboardScreen yang asli dengan parameter lengkap
             DashboardScreen(
                 navController = navController,
-                profilViewModel = profilViewModel,
+//                profilViewModel = profilViewModel,
                 dashboardViewModel = dashboardViewModel
             )
         }

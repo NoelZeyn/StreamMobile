@@ -6,6 +6,7 @@ import com.example.stream.Data.Model.Request.UpdateEmailRequest
 import com.example.stream.Data.Model.Request.UpdatePasswordRequest
 import com.example.stream.Data.Model.Response.PortalProfileResponseData
 import com.example.stream.Data.Model.Response.PosyanduDetailResponse
+import com.example.stream.Data.Model.Response.ProfileResponse
 import com.example.stream.Data.Model.Response.UpdateEmailResponse
 import com.example.stream.Data.Model.Response.UpdatePasswordResponse
 import com.example.stream.Data.Model.Response.UserEmailResponse
@@ -85,19 +86,13 @@ class ProfileRepository {
         }
     }
 
-    suspend fun getProfile(token: String, id: Int): Result<WargaResponse> {
+    suspend fun getProfile(token: String, id: Int): Result<ProfileResponse> {
         return try {
-            val response = ApiClient.apiService.getProfile("Bearer $token", id)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    Result.success(body)
-                } else {
-                    Result.failure(Exception(Exception("Body kosong")))
-                }
+            val response = ApiClient.apiService.getProfile(token)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "Request failed"
-                Result.failure(Exception(errorMsg))
+                Result.failure(Exception("Gagal mengambil data profil: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

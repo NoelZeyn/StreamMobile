@@ -39,34 +39,34 @@ import kotlinx.coroutines.delay
 @Composable
 fun DashboardScreen(
     navController: NavController,
-    profilViewModel: ProfilViewModel,
+//    profilViewModel: ProfilViewModel,
     dashboardViewModel: DashboardViewModel
 ) {
     val context = LocalContext.current
     val token by UserPreferences.getToken(context).collectAsState(initial = "")
     val id by UserPreferences.getUserId(context).collectAsState(initial = 0)
 
-    val profileState by profilViewModel.profileState.collectAsState()
+//    val profileState by profilViewModel.profileState.collectAsState()
     val scheduleState by dashboardViewModel.scheduleState.collectAsState()
     val liveState by dashboardViewModel.liveState.collectAsState()
 
     LaunchedEffect(id, token) {
         if (token?.isNotEmpty() == true && id != null && id != 0) {
             val bearerToken = "Bearer $token"
-            profilViewModel.getProfile(bearerToken, id!!)
-            dashboardViewModel.fetchSchedules(id!!)
-            dashboardViewModel.fetchLiveStream(id!!)
+//            profilViewModel.getProfile(bearerToken, id!!)
+            dashboardViewModel.fetchSchedules(bearerToken, id!!)
+            dashboardViewModel.fetchLiveStream(bearerToken, id!!)
         }
     }
 
-    if (profileState is GetProfileState.Loading || scheduleState is ScheduleState.Loading || liveState is LiveState.Loading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color(0xFF08607A))
-        }
-        return
-    }
+//    if (profileState is GetProfileState.Loading || scheduleState is ScheduleState.Loading || liveState is LiveState.Loading) {
+//        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//            CircularProgressIndicator(color = Color(0xFF08607A))
+//        }
+//        return
+//    }
 
-    val profileName = (profileState as? GetProfileState.Success)?.data?.name ?: "-"
+//    val profileName = (profileState as? GetProfileState.Success)?.data?.name ?: "-"
     val isScheduleError = scheduleState is ScheduleState.Error
     val isLiveError = liveState is LiveState.Error
 
@@ -76,7 +76,7 @@ fun DashboardScreen(
 
         Failed(
             navController = navController,
-            nama = profileName,
+//            nama = profileName,
             scheduleError = scheduleMsg,
             liveError = liveMsg
         )
@@ -87,12 +87,12 @@ fun DashboardScreen(
         if (schedules.isEmpty() && liveItems.isEmpty()) {
             Empty(
                 navController = navController,
-                nama = profileName
+//                nama = profileName
             )
         } else {
             Success(
                 navController = navController,
-                nama = profileName,
+//                nama = profileName,
                 schedules = schedules,
                 liveItems = liveItems
             )
@@ -103,13 +103,13 @@ fun DashboardScreen(
 @Composable
 fun Success(
     navController: NavController,
-    nama: String,
+//    nama: String,
     schedules: List<ScheduleItem>,
     liveItems: List<LiveScheduleItem>
 ) {
     DashboardContent(
         navController = navController,
-        nama = nama,
+//        nama = nama,
         schedules = schedules,
         liveItems = liveItems,
         scheduleErrorMessage = null,
@@ -120,13 +120,13 @@ fun Success(
 @Composable
 fun Failed(
     navController: NavController,
-    nama: String,
+//    nama: String,
     scheduleError: String,
     liveError: String
 ) {
     DashboardContent(
         navController = navController,
-        nama = nama,
+//        nama = nama,
         schedules = emptyList(),
         liveItems = emptyList(),
         scheduleErrorMessage = scheduleError,
@@ -137,11 +137,11 @@ fun Failed(
 @Composable
 fun Empty(
     navController: NavController,
-    nama: String
+//    nama: String
 ) {
     DashboardContent(
         navController = navController,
-        nama = nama,
+//        nama = nama,
         schedules = emptyList(),
         liveItems = emptyList(),
         scheduleErrorMessage = null,
@@ -153,7 +153,7 @@ fun Empty(
 @Composable
 fun DashboardContent(
     navController: NavController,
-    nama: String,
+//    nama: String,
     schedules: List<ScheduleItem>,
     liveItems: List<LiveScheduleItem>,
     scheduleErrorMessage: String?,
@@ -170,7 +170,7 @@ fun DashboardContent(
                     .padding(16.dp)
             ) {
                 HelpDeskIcon(onClick = {}, navController = navController)
-                HeaderContent(nama)
+//                HeaderContent(nama)
 
                 Spacer(modifier = Modifier.height(16.dp))
                 MenuSection(navController)
@@ -464,7 +464,7 @@ fun DashboardSuccessPreview() {
 
     Success(
         navController = fakeNavController,
-        nama = "Lidia Sola",
+//        nama = "Lidia Sola",
         schedules = dummySchedules,
         liveItems = dummyLiveItems
     )
@@ -476,7 +476,7 @@ fun DashboardFailedPreview() {
     val fakeNavController = androidx.navigation.compose.rememberNavController()
     Failed(
         navController = fakeNavController,
-        nama = "Lidia Sola",
+//        nama = "Lidia Sola",
         scheduleError = "Failed to fetch schedules",
         liveError = "Failed to fetch live stream"
     )
@@ -488,6 +488,6 @@ fun DashboardEmptyPreview(){
     val fakeNavController = androidx.navigation.compose.rememberNavController()
     Empty(
         navController = fakeNavController,
-        nama = "Lidia Sola"
+//        nama = "Lidia Sola"
     )
 }

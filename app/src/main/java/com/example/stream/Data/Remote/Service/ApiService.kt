@@ -26,6 +26,7 @@ import com.example.stream.Data.Model.Response.PortalProfileResponse
 import com.example.stream.Data.Model.Response.PosyanduDetailResponse
 import com.example.stream.Data.Model.Response.PosyanduItem
 import com.example.stream.Data.Model.Response.PosyanduResponse
+import com.example.stream.Data.Model.Response.ProfileResponse
 import com.example.stream.Data.Model.Response.RegisterResponse
 import com.example.stream.Data.Model.Response.ScheduleResponse
 import com.example.stream.Data.Model.Response.UpdateEmailResponse
@@ -57,24 +58,28 @@ interface ApiService {
 
     @GET("api/v1/schedules")
     suspend fun getSchedules(
+        @Header("Authorization") bearerToken: String,
         @Query("user_id") userId: Int,
         @Query("page") page: Int = 1
     ): Response<ScheduleResponse>
 
     @GET("api/v1/schedules/live")
     suspend fun getLive(
+        @Header("Authorization") bearerToken: String,
         @Query("user_id") userId: Int
     ): Response<LiveScheduleResponse>
 
     @GET("api/v1/profile")
-    suspend fun getProfile(): Response<ProfileResponse>
+    suspend fun getProfile(
+        @Header("Authorization") bearerToken: String
+    ): Response<ProfileResponse>
 
     @POST("api/auth/warga/anggota")
     suspend fun anggotaKeluarga(@Body request: AnggotaKeluargaRequest): Response<AnggotaKeluargaRequest>
 
     @GET("api/auth/warga/anggota/{no_kk}")
     suspend fun getAnggotaKeluarga(
-        @Header("Authorization")  bearerToken: String,
+        @Header("Authorization") bearerToken: String,
         @Path("no_kk") noKk: String
     ): Response<List<AnggotaResponse>>
 
@@ -85,11 +90,11 @@ interface ApiService {
         @Body request: PortalProfileRequest
     ): Response<PortalProfileResponse>
 
-    @GET("api/auth/warga/update-profil/{id}")
-    suspend fun getProfile(
-        @Header("Authorization")  bearerToken: String,
-        @Path("id") id: Int
-    ): Response<WargaResponse>
+//    @GET("api/auth/warga/update-profil/{id}")
+//    suspend fun getProfile(
+//        @Header("Authorization")  bearerToken: String,
+//        @Path("id") id: Int
+//    ): Response<WargaResponse>
 
     @GET("api/auth/warga/show/{wargaId}/{nik}/{tipe}")
     suspend fun getRiwayat(

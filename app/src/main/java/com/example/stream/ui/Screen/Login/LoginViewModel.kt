@@ -85,6 +85,7 @@ class LoginViewModel : ViewModel() {
                         val msg = loginResponse?.message ?: "Gagal masuk ke sistem"
                         _loginState.value = LoginState.Error(msg)
                         _errorMessage.value = msg
+                        _errorMessage.value = msg
                         _showErrorToast.value = true
                         loadCaptcha()
                     }

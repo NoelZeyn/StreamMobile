@@ -15,9 +15,11 @@ import com.example.stream.Data.Model.Request.UpdateEmailRequest
 import com.example.stream.Data.Model.Request.UpdatePasswordRequest
 import com.example.stream.Data.Model.Response.PortalProfileResponseData
 import com.example.stream.Data.Model.Response.PosyanduDetailResponse
+import com.example.stream.Data.Model.Response.ProfileResponse
 import com.example.stream.Data.Model.Response.UpdateEmailResponse
 import com.example.stream.Data.Model.Response.UpdatePasswordResponse
 import com.example.stream.Data.Model.Response.WargaResponse
+import com.example.stream.Data.Remote.Client.ApiClient
 import com.example.stream.Data.Remote.Client.ApiClient.apiService
 import com.example.stream.Data.Remote.Service.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,15 +47,16 @@ class ProfilViewModel(private val repository: ProfileRepository) : ViewModel() {
     private val _profileState = MutableStateFlow<GetProfileState>(GetProfileState.Idle)
     val profileState: StateFlow<GetProfileState> = _profileState.asStateFlow()
 
-    fun getProfile(token: String, id: Int) {
-        viewModelScope.launch {
-            _profileState.value = GetProfileState.Loading
-            val result = repository.getProfile(token, id)
-            _profileState.value = when {
-                result.isSuccess -> GetProfileState.Success(result.getOrThrow())
-                result.isFailure -> GetProfileState.Error(result.exceptionOrNull()?.message ?: "Terjadi kesalahan")
-                else -> GetProfileState.Idle
+    suspend fun getProfile(token: String): Result<ProfileResponse> {
+        return try {
+            val response = ApiClient.apiService.getProfile(token)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Gagal mengambil data profil: ${response.message()}"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

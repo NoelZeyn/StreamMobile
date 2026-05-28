@@ -90,7 +90,7 @@ fun EditProfileScreen(
     LaunchedEffect(Unit) {
         if (!token.isNullOrEmpty()) {
             val bearerToken = "Bearer $token"
-            id?.let { viewModel.getProfile(bearerToken, it) }
+            id?.let { viewModel.getProfile(bearerToken) }
         }
     }
 
