@@ -1,5 +1,6 @@
 package com.example.stream.ui.Screen.Dashboard
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -81,7 +82,7 @@ fun DashboardScreen(
             liveError = liveMsg
         )
     } else {
-        val schedules = (scheduleState as? ScheduleState.Success)?.data?.data ?: emptyList()
+        val schedules = (scheduleState as? ScheduleState.Success)?.data?.paginationData?.data ?: emptyList()
         val liveItems = (liveState as? LiveState.Success)?.data?.data ?: emptyList()
 
         if (schedules.isEmpty() && liveItems.isEmpty()) {
@@ -189,7 +190,7 @@ fun DashboardContent(
 
                     when {
                         liveErrorMessage != null -> {
-                            InformasiStreamingLive(judulSesi = liveErrorMessage, streamerName = "Failed to fetch", streamerId = 0, isError = true)
+                            InformasiStreamingLive(judulSesi = liveErrorMessage, streamerId = 0, isError = true)
                         }
                         liveItems.isEmpty() -> {
                             LiveScheduleEmptyCard()
@@ -198,7 +199,6 @@ fun DashboardContent(
                             for (liveItem in liveItems) {
                                 InformasiStreamingLive(
                                     judulSesi = liveItem.title,
-                                    streamerName = "Streamer #${liveItem.userId}",
                                     streamerId = liveItem.userId
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -395,7 +395,7 @@ fun ImageSlider(imageList: List<Int> = listOf(R.drawable.slider1, R.drawable.sli
 }
 
 @Composable
-fun InformasiStreamingLive(judulSesi: String = "-", streamerName: String = "-", streamerId: Int = 0, isError: Boolean = false) {
+fun InformasiStreamingLive(judulSesi: String = "-", streamerId: Int = 0, isError: Boolean = false) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -426,13 +426,13 @@ fun InformasiStreamingLive(judulSesi: String = "-", streamerName: String = "-", 
                 }
             }
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Filled.Person, contentDescription = "Name", tint = Color(0xFF08607A), modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Streamer", fontSize = 14.sp, modifier = Modifier.width(80.dp))
-                    Text(text = ": $streamerName", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(imageVector = Icons.Filled.Person, contentDescription = "Name", tint = Color(0xFF08607A), modifier = Modifier.size(20.dp))
+//                    Spacer(modifier = Modifier.width(8.dp))
+//                    Text("Streamer", fontSize = 14.sp, modifier = Modifier.width(80.dp))
+//                    Text(text = ": $streamerName", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Filled.LocationOn, contentDescription = "ID", tint = Color(0xFF08607A), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))

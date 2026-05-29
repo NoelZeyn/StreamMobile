@@ -6,6 +6,11 @@ import com.google.gson.annotations.SerializedName
 data class ScheduleResponse(
     @SerializedName("status") val status : Boolean,
     @SerializedName("message") val message: String?,
+    @SerializedName("data") val paginationData: SchedulePaginationData
+)
+
+data class SchedulePaginationData(
+    @SerializedName("current_page") val currentPage: Int,
     @SerializedName("data") val data: List<ScheduleItem>
 )
 

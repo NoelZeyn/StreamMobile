@@ -71,10 +71,10 @@ class LoginViewModel : ViewModel() {
 
                         UserPreferences.saveUserData(
                             context = context,
-                            token = "Bearer ${loginResponse.access_token}",
+                            token = loginResponse.access_token,
                             nik = "-",
                             noKK = "-",
-                            userId = 0,
+                            userId = loginResponse.user_id,
                             email = email.value.trim(),
                             channel_name = "-",
                             nama = "User Posyandu"
