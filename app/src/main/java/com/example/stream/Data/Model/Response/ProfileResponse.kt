@@ -12,5 +12,4 @@ data class ProfileItem(
     @SerializedName("name") val name: String,
     @SerializedName("email") val email: String,
     @SerializedName("channel_name") val channel_name: String,
-
 )

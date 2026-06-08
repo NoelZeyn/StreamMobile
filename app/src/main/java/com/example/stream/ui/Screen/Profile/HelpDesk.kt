@@ -52,11 +52,10 @@ fun HelpDeskScreen(
             Text("Help Desk", style = MaterialTheme.typography.titleLarge)
         }
 
-        // 🧩 Isi tengah dipusatkan
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 10.dp, bottom = 56.dp), // jarak dari header & bawah
+                .padding(top = 10.dp, bottom = 56.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -80,7 +79,7 @@ fun HelpDeskScreen(
                 Button(
                     onClick = {
                         val intent = Intent(Intent.ACTION_SENDTO).apply {
-                            data = Uri.parse("mailto:ranihany223@gmail.com")
+                            data = Uri.parse("mailto:ahmadakrom50@gmail.com")
                         }
                         context.startActivity(intent)
                     },

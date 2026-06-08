@@ -5,6 +5,8 @@ data class LoginResponse(
     val message: String,
     val access_token: String,
     val user_id: Int,
+    val name: String,
+    val channel_name: String,
     val token_type: String
 )
 

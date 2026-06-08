@@ -31,7 +31,6 @@ fun PengaturanScreen(
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        // Header dengan ikon kembali dan judul
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -52,7 +51,6 @@ fun PengaturanScreen(
             )
         }
 
-        // Kartu pengaturan
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -60,7 +58,6 @@ fun PengaturanScreen(
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                // Baris Email
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -75,7 +72,7 @@ fun PengaturanScreen(
                     )
                     Text(
                         text = "Ubah Email",
-                        color = Color(0xFFFF9800), // warna oranye
+                        color = Color(0xFFFF9800),
                         fontSize = 14.sp,
                         modifier = Modifier.clickable { navController.navigate("edit-email") }
                     )
@@ -83,7 +80,6 @@ fun PengaturanScreen(
 
                 Divider(color = Color.LightGray, thickness = 0.5.dp)
 
-                // Baris Password
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

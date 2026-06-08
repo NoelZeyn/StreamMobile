@@ -44,8 +44,8 @@ fun KonfirmasiPendaftaranScreen(
 ) {
     val context = LocalContext.current
     val token by UserPreferences.getToken(context).collectAsState(initial = "")
-    val wargaNik by UserPreferences.getNik(context).collectAsState(initial = "")
-    val no_kk by UserPreferences.getNoKK(context).collectAsState(initial = "")
+//    val wargaNik by UserPreferences.getNik(context).collectAsState(initial = "")
+//    val no_kk by UserPreferences.getNoKK(context).collectAsState(initial = "")
 
     val beritaDetailState by viewModel.uiStateDetail.collectAsState()
     val beritaAntrianState by viewModel.uiStateAntrian.collectAsState()
@@ -77,14 +77,14 @@ fun KonfirmasiPendaftaranScreen(
 
     var selectedNik by remember { mutableStateOf("") }
 
-    LaunchedEffect(token, id, no_kk) {
-        if (token?.isNotEmpty() == true) {
-            val bearer = "Bearer $token"
-            viewModel.fetchBeritaDetail(bearer, id)
-            viewModel.fetchBeritaAntrian(bearer, id)
-            no_kk?.let { viewModel.fetchAnggotaBerita(bearer, it) }
-        }
-    }
+//    LaunchedEffect(token, id, no_kk) {
+//        if (token?.isNotEmpty() == true) {
+//            val bearer = "Bearer $token"
+//            viewModel.fetchBeritaDetail(bearer, id)
+//            viewModel.fetchBeritaAntrian(bearer, id)
+//            no_kk?.let { viewModel.fetchAnggotaBerita(bearer, it) }
+//        }
+//    }
 
     val scrollState = rememberScrollState()
 
@@ -224,35 +224,35 @@ fun KonfirmasiPendaftaranScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-
-        Button(
-            onClick = {
-                if (!token.isNullOrEmpty() && !wargaNik.isNullOrEmpty()) {
-                    val bearer = "Bearer $token"
-                    wargaNik?.let { nikWarga ->
-                        viewModel.daftarAntrian(
-                            bearer = bearer,
-                            wargaNik = nikWarga,
-                            nik = selectedNik,
-                            beritaId = id,
-                            tipePemeriksaan = "balita"
-                        )
-                    }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(25.dp),
-            enabled = daftarAntrianState !is DaftarAntrianUiState.Loading,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00627C))
-        ) {
-            if (daftarAntrianState is DaftarAntrianUiState.Loading) {
-                CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp))
-            } else {
-                Text("Daftar Antrian", fontWeight = FontWeight.Bold, color = Color.White)
-            }
-        }
+//
+//        Button(
+//            onClick = {
+//                if (!token.isNullOrEmpty() && !wargaNik.isNullOrEmpty()) {
+//                    val bearer = "Bearer $token"
+//                    wargaNik?.let { nikWarga ->
+//                        viewModel.daftarAntrian(
+//                            bearer = bearer,
+//                            wargaNik = nikWarga,
+//                            nik = selectedNik,
+//                            beritaId = id,
+//                            tipePemeriksaan = "balita"
+//                        )
+//                    }
+//                }
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(50.dp),
+//            shape = RoundedCornerShape(25.dp),
+//            enabled = daftarAntrianState !is DaftarAntrianUiState.Loading,
+//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00627C))
+//        ) {
+//            if (daftarAntrianState is DaftarAntrianUiState.Loading) {
+//                CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp))
+//            } else {
+//                Text("Daftar Antrian", fontWeight = FontWeight.Bold, color = Color.White)
+//            }
+//        }
 
         Spacer(modifier = Modifier.height(8.dp))
 

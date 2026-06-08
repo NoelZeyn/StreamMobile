@@ -70,7 +70,7 @@ fun LandingPageContent() {
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
             Text(
-                text = "Peduli Kesehatan Ibu dan Anak dimulai dari Sini.",
+                text = "Satu aplikasi untuk kemudahan manajemen Anda.",
                 color = androidx.compose.ui.graphics.Color(0xFF7D7F81),
                 style = MaterialTheme.typography.bodyMedium
             )

@@ -57,15 +57,15 @@ fun PortalPeriksaScreen(
     val context = LocalContext.current
 
     val token by UserPreferences.getToken(context).collectAsState(initial = "")
-    val no_kk by UserPreferences.getNoKK(context).collectAsState(initial = "")
+//    val no_kk by UserPreferences.getNoKK(context).collectAsState(initial = "")
     val userId by UserPreferences.getUserId(context).collectAsState(initial = 0)
 
-    LaunchedEffect(token, no_kk) {
-        if (!token.isNullOrEmpty() && !no_kk.isNullOrEmpty()) {
-            val bearerToken = "Bearer $token"
-            viewModel.fetchAnggota(bearerToken, no_kk!!)
-        }
-    }
+//    LaunchedEffect(token, no_kk) {
+//        if (!token.isNullOrEmpty() && !no_kk.isNullOrEmpty()) {
+//            val bearerToken = "Bearer $token"
+//            viewModel.fetchAnggota(bearerToken, no_kk!!)
+//        }
+//    }
 
     MainScaffold(
         navController = navController,

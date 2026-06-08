@@ -55,14 +55,13 @@ import androidx.navigation.NavController
 
 import com.example.stream.Data.Local.UserPreferences
 import com.example.stream.Data.Model.Request.PortalProfileRequest
+import com.example.stream.Data.Model.Response.PortalProfileResponseData
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
     viewModel: ProfilViewModel,
@@ -70,18 +69,6 @@ fun EditProfileScreen(
 ) {
     val updateState = viewModel.updateState
     val profileState by viewModel.profileState.collectAsState()
-
-    val nama = remember { mutableStateOf("") }
-    val nik = remember { mutableStateOf("") }
-//    val tanggalLahir = remember { mutableStateOf("") }
-    val nomorTelepon = remember { mutableStateOf("") }
-    val jenisKelamin = remember { mutableStateOf("") }
-    val tanggalLahir = remember { mutableStateOf<LocalDate?>(null) }
-    val tanggalLahirString = remember { mutableStateOf("") }
-
-
-    val listJenisKelamin = listOf("Laki-laki", "Perempuan")
-    var expanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val token by UserPreferences.getToken(context).collectAsState(initial = "")
@@ -94,33 +81,72 @@ fun EditProfileScreen(
         }
     }
 
+    // Menangani Side Effects seperti Toast & Reset State di level Screen
+    LaunchedEffect(updateState) {
+        when (updateState) {
+            is UpdateProfileState.Success -> {
+                Toast.makeText(context, "Perubahan telah disimpan", Toast.LENGTH_SHORT).show()
+                viewModel.resetState()
+            }
+            is UpdateProfileState.Error -> {
+                Toast.makeText(context, updateState.message, Toast.LENGTH_SHORT).show()
+                viewModel.resetState()
+            }
+            else -> {}
+        }
+    }
+
+    EditProfileContent(
+        profileState = profileState,
+        updateState = updateState,
+        onBackClick = { navController.popBackStack() },
+        onSaveClick = { request ->
+            if (!token.isNullOrEmpty() && id != null) {
+                val bearerToken = "Bearer $token"
+                viewModel.updateProfile(request, id!!, bearerToken)
+            }
+        },
+        onResetUpdateState = { viewModel.resetState() }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditProfileContent(
+    profileState: GetProfileState,
+    updateState: UpdateProfileState,
+    onBackClick: () -> Unit,
+    onSaveClick: (PortalProfileRequest) -> Unit,
+    onResetUpdateState: () -> Unit
+) {
+    val nama = remember { mutableStateOf("") }
+    val nik = remember { mutableStateOf("") }
+    val nomorTelepon = remember { mutableStateOf("") }
+    val jenisKelamin = remember { mutableStateOf("") }
+    val tanggalLahir = remember { mutableStateOf<LocalDate?>(null) }
+    val tanggalLahirString = remember { mutableStateOf("") }
+
+    val listJenisKelamin = listOf("Laki-laki", "Perempuan")
+    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    // Mengisi form ketika data profil berhasil dimuat
     LaunchedEffect(profileState) {
-        if(profileState is GetProfileState.Success) {
-            val profile = (profileState as GetProfileState.Success).data
+        if (profileState is GetProfileState.Success) {
+            val profile = profileState.data
             nama.value = profile.name ?: ""
             nik.value = profile.nik ?: ""
             nomorTelepon.value = profile.channel_name ?: ""
             jenisKelamin.value = profile.jenis_kelamin ?: ""
             profile.tanggal_lahir?.let {
-                tanggalLahir.value = LocalDate.parse(it)
-                tanggalLahirString.value = tanggalLahir.value!!.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                try {
+                    tanggalLahir.value = LocalDate.parse(it)
+                    tanggalLahirString.value = tanggalLahir.value!!.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                } catch (e: Exception) {
+                    // Antisipasi format tanggal tidak sesuai
+                }
             }
-        } else {}
-    }
-
-    when (updateState) {
-        is UpdateProfileState.Loading -> {
-            CircularProgressIndicator()
         }
-        is UpdateProfileState.Success -> {
-            Toast.makeText(context, "Perubahan telah disimpan", Toast.LENGTH_SHORT).show()
-            viewModel.resetState()
-        }
-        is UpdateProfileState.Error -> {
-            Toast.makeText(context, (updateState as UpdateProfileState.Error).message, Toast.LENGTH_SHORT).show()
-            viewModel.resetState()
-        }
-        else -> {}
     }
 
     Column(
@@ -129,17 +155,19 @@ fun EditProfileScreen(
             .padding(24.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Top Bar / Header
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
-        ){
+        ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Kembali",
-                modifier = Modifier.padding(end = 15.dp)
-                    .clickable { navController.popBackStack() }
+                modifier = Modifier
+                    .padding(end = 15.dp)
+                    .clickable { onBackClick() }
             )
             Text(
                 text = "Edit Profil",
@@ -149,9 +177,8 @@ fun EditProfileScreen(
             )
         }
 
-        when(profileState) {
+        when (profileState) {
             is GetProfileState.Success -> {
-                val profile = (profileState as GetProfileState.Success).data
                 CustomFormField(
                     label = "Nama",
                     value = nama.value,
@@ -173,8 +200,8 @@ fun EditProfileScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Date Picker Dialog
                 val dateDialogState = rememberMaterialDialogState()
-
                 MaterialDialog(
                     dialogState = dateDialogState,
                     buttons = {
@@ -188,11 +215,7 @@ fun EditProfileScreen(
                     ) { date ->
                         tanggalLahir.value = date
                         tanggalLahirString.value = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                        Toast.makeText(
-                            context,
-                            "Tanggal dipilih: ${tanggalLahirString.value}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Tanggal dipilih: ${tanggalLahirString.value}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -202,11 +225,8 @@ fun EditProfileScreen(
                     onValueChange = {},
                     placeholder = "Pilih tanggal lahir Anda",
                     trailingIcon = {
-                        IconButton(onClick = {
-                            dateDialogState.show()
-                        }) {
+                        IconButton(onClick = { dateDialogState.show() }) {
                             Icon(Icons.Default.DateRange, contentDescription = null)
-
                         }
                     },
                     readOnly = true
@@ -273,36 +293,32 @@ fun EditProfileScreen(
                         }
                     }
                 }
-
             }
             is GetProfileState.Error -> {
-                val message = (profileState as GetProfileState.Error).message
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Gagal memuat profil: $message", color = Color.Red)
+                Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                    Text("Gagal memuat profil: ${profileState.message}", color = Color.Red)
                 }
             }
-
-            else -> {}
+            else -> {
+                Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Action Button
         Button(
             onClick = {
-                if (!token.isNullOrEmpty()) {
-                    val userId = id
-                    val bearerToken = "Bearer $token"
-                    val request = PortalProfileRequest(
-                        name = nama.value,
-                        nik = nik.value,
-                        tanggal_lahir = tanggalLahir.value?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "",
-                        channel_name = nomorTelepon.value,
-                        jenis_kelamin = jenisKelamin.value
-                    )
-                    if (userId != null) {
-                        viewModel.updateProfile(request, userId, bearerToken)
-                    }
-                }
+                val request = PortalProfileRequest(
+                    name = nama.value,
+                    nik = nik.value,
+                    tanggal_lahir = tanggalLahir.value?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "",
+                    channel_name = nomorTelepon.value,
+                    jenis_kelamin = jenisKelamin.value
+                )
+                onSaveClick(request)
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005F6B)),
             shape = RoundedCornerShape(50),
@@ -313,18 +329,22 @@ fun EditProfileScreen(
             Text("Simpan", color = Color.White)
         }
 
-        when(updateState) {
+        // Status Update State di bagian bawah form
+        when (updateState) {
             is UpdateProfileState.Loading -> {
+                Spacer(modifier = Modifier.height(16.dp))
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
             is UpdateProfileState.Success -> {
                 LaunchedEffect(Unit) {
-                    viewModel.resetState()
+                    onResetUpdateState()
                 }
-                Text("Berhasil memperbarui profil!", color = Color.Green)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Berhasil memperbarui profil!", color = Color.Green, modifier = Modifier.align(Alignment.CenterHorizontally))
             }
             is UpdateProfileState.Error -> {
-                Text("Error: ${(updateState as UpdateProfileState.Error).message}", color = Color.Red)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Error: ${updateState.message}", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
             }
             else -> {}
         }
@@ -372,11 +392,3 @@ fun CustomFormField(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun EditProfileScreenPreview() {
-    MaterialTheme {
-//        EditProfileScreen()
-    }
-}

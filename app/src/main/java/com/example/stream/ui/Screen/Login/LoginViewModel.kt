@@ -72,12 +72,10 @@ class LoginViewModel : ViewModel() {
                         UserPreferences.saveUserData(
                             context = context,
                             token = loginResponse.access_token,
-                            nik = "-",
-                            noKK = "-",
                             userId = loginResponse.user_id,
                             email = email.value.trim(),
-                            channel_name = "-",
-                            nama = "User Posyandu"
+                            channel_name = loginResponse.channel_name,
+                            nama = loginResponse.name
                         )
 
                         _loginState.value = LoginState.Success(token = loginResponse.access_token)

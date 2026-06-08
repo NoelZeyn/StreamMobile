@@ -112,7 +112,6 @@ fun MainNavHost(navController: NavHostController = rememberNavController()) {
 //            val profileFactory = ProfileViewModelFactory(profileRepository)
 //            val profilViewModel: ProfilViewModel = viewModel(factory = profileFactory)
             val apiService = com.example.stream.Data.Remote.Client.ApiClient.apiService
-            // 2. Siapkan DashboardViewModel (Sesuaikan jika dashboard-mu pakai factory juga)
             val dashboardViewModel: DashboardViewModel = viewModel(
                 factory = object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -120,7 +119,6 @@ fun MainNavHost(navController: NavHostController = rememberNavController()) {
                     }
                 }
             )
-            // 3. Panggil DashboardScreen yang asli dengan parameter lengkap
             DashboardScreen(
                 navController = navController,
 //                profilViewModel = profilViewModel,

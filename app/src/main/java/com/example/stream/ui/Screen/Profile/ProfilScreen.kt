@@ -69,7 +69,7 @@ fun ProfilScreen(
 ) {
     val context = LocalContext.current
 
-    val nama by UserPreferences.getNama(context = context).collectAsState(initial = "Lidia")
+    val name by UserPreferences.getNama(context = context).collectAsState(initial = "Lidia")
     val email by UserPreferences.getEmail(context = context).collectAsState(initial = "Sola")
     val channel_name by UserPreferences.getNoTelp(context = context).collectAsState(initial = "123")
     val token by UserPreferences.getToken(context = context).collectAsState(initial = "")
@@ -92,7 +92,7 @@ fun ProfilScreen(
 
     ProfilContent(
         navController = navController,
-        nama = nama ?: "-",
+        name = name ?: "-",
         email = email ?: "-",
         channelName = channel_name ?: "-",
         onLogoutClick = {
@@ -102,14 +102,10 @@ fun ProfilScreen(
     )
 }
 
-// ====================================================
-// CORE VIEW CONTENT (SINGLE SOURCE OF TRUTH)
-// ====================================================
-
 @Composable
 fun ProfilContent(
     navController: NavController,
-    nama: String,
+    name: String,
     email: String,
     channelName: String,
     onLogoutClick: () -> Unit
@@ -210,14 +206,19 @@ fun ProfilContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = nama,
+                    text = name,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF003049)
                     )
                 )
                 Text(
-                    text = "$email | $channelName",
+                    text = email,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+                Text(
+                    text = channelName,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -270,9 +271,6 @@ fun ProfilContent(
     }
 }
 
-// ====================================================
-// REUSABLE ATOMIC UI COMPONENTS
-// ====================================================
 
 @Composable
 fun ProfileMenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
@@ -328,19 +326,15 @@ fun ProfileMenuSection(items: List<Pair<ImageVector, String>>, onClick: (String)
     }
 }
 
-// ====================================================
-// PREVIEW
-// ====================================================
-
 @Preview(name = "Profile Screen - Preview Mode", showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewProfilScreen() {
     val fakeNavController = androidx.navigation.compose.rememberNavController()
     ProfilContent(
         navController = fakeNavController,
-        nama = "Lidia Sola",
-        email = "lidiasola@streamer.com",
-        channelName = "LidiaSola_Gaming",
+        name = "Ahmad Akrom",
+        email = "ahmadakrom@streamer.com",
+        channelName = "Vasta Koryuz",
         onLogoutClick = {}
     )
 }

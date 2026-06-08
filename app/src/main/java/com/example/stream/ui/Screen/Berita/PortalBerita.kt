@@ -57,12 +57,12 @@ fun PortalBeritaScreen(
 ) {
     val context = LocalContext.current
     val token by UserPreferences.getToken(context).collectAsState(initial = "")
-    val posyanduId by UserPreferences.getNoKK(context).collectAsState(initial = "")
+//    val posyanduId by UserPreferences.getNoKK(context).collectAsState(initial = "")
 
-    LaunchedEffect(Unit) {
-        val bearerToken = "Bearer $token"
-        viewModel.fetchBerita(bearerToken, posyanduId)
-    }
+//    LaunchedEffect(Unit) {
+//        val bearerToken = "Bearer $token"
+//        viewModel.fetchBerita(bearerToken, posyanduId)
+//    }
 
     val uiState by viewModel.uiState.collectAsState()
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")

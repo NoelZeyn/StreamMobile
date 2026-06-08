@@ -10,10 +10,6 @@ data class PortalProfileResponseData(
     val id: Int,
     val name: String?,
     val channel_name: String?,
-    val nik: String?,
-    val posisi_keluarga: String?,
-    val tanggal_lahir: String?,
-    val jenis_kelamin: String?
 )
 
 data class UpdateEmailResponse(

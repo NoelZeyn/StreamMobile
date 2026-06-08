@@ -444,10 +444,6 @@ fun InformasiStreamingLive(judulSesi: String = "-", streamerId: Int = 0, isError
     }
 }
 
-// ====================================================
-// PREVIEWS
-// ====================================================
-
 @Preview(name = "Dashboard - Success State", showBackground = true, showSystemUi = true)
 @Composable
 fun DashboardSuccessPreview() {
@@ -464,7 +460,7 @@ fun DashboardSuccessPreview() {
 
     Success(
         navController = fakeNavController,
-//        nama = "Lidia Sola",
+//        nama = "-",
         schedules = dummySchedules,
         liveItems = dummyLiveItems
     )
@@ -476,7 +472,7 @@ fun DashboardFailedPreview() {
     val fakeNavController = androidx.navigation.compose.rememberNavController()
     Failed(
         navController = fakeNavController,
-//        nama = "Lidia Sola",
+//        nama = "-",
         scheduleError = "Failed to fetch schedules",
         liveError = "Failed to fetch live stream"
     )
@@ -488,6 +484,6 @@ fun DashboardEmptyPreview(){
     val fakeNavController = androidx.navigation.compose.rememberNavController()
     Empty(
         navController = fakeNavController,
-//        nama = "Lidia Sola"
+//        nama = "-"
     )
 }

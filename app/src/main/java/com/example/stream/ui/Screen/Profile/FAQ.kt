@@ -1,10 +1,11 @@
 package com.example.stream.ui.Screen.Profile
 
-//@file:OptIn(ExperimentalMaterial3Api::class)
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,9 +29,8 @@ class FAQActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-
             MaterialTheme {
-                FAQScreen( navController )
+                FAQScreen(navController)
             }
         }
     }
@@ -48,17 +49,27 @@ fun FAQScreen(
     val faqItems = listOf(
         FAQItem(
             question = "Apa itu aplikasi Stream Management?",
-            answer = "Aplikasi ini memudahkan orang tua memantau pertumbuhan anak, melihat hasil pemeriksaan, dan mendaftar antrian Posyandu langsung dari HP."
+            answer = "Aplikasi ini dirancang untuk memudahkan manajemen alur kerja, pemantauan status layanan secara real-time, dan pendaftaran antrian operasional langsung dari perangkat Anda."
         ),
-        FAQItem("Di mana saya bisa melihat hasil pemeriksaan anak?", "Masuk ke menu Portal Pemeriksaan, lalu pilih nama anak untuk melihat data berat badan, tinggi, dan status gizi."),
-        FAQItem("Kapan data pemeriksaan muncul?", "Data akan muncul setelah pemeriksaan selesai dan kader menginput datanya ke sistem."),
-        FAQItem("Bagaimana cara mendaftar antrian Posyandu?", "Masuk ke Portal Berita, temukan pengumuman jadwal, lalu tekan tombol “Daftar Antrian”."),
-        FAQItem("Tidak bisa daftar antrian, kenapa ya?", "Pastikan Anda sudah login dan jadwalnya masih tersedia. Jika tetap gagal, hubungi kader Posyandu."),
-        FAQItem("Data saya aman nggak?", "Beberapa data yang sudah tersimpan bisa dilihat offline, tapi untuk input baru dan antrian butuh koneksi internet."),
-        FAQItem("Apakah aplikasi bisa dipakai tanpa internet?", "Tenang, semua data tersimpan aman dan hanya bisa diakses oleh Anda dan kader Posyandu.")
+        FAQItem(
+            question = "Di mana saya bisa melihat hasil pemantauan atau laporan?",
+            answer = "Masuk ke menu Portal Pemeriksaan, lalu pilih kategori atau proyek yang ingin Anda lihat untuk memantau data perkembangan, metrik utama, dan status terbarunya."
+        ),
+        FAQItem(
+            question = "Bagaimana cara mendaftar antrian di Stream Management?",
+            answer = "Masuk ke menu Portal Berita, temukan jadwal stream atau sesi yang tersedia."
+        ),
+        FAQItem(
+            question = "Apakah data saya tersimpan dengan aman?",
+            answer = "Tenang, semua data operasional Anda tersimpan dengan aman di enkripsi sistem dan hanya dapat diakses oleh Anda serta tim admin Stream Management yang berwenang."
+        ),
+        FAQItem(
+            question = "Apakah aplikasi ini bisa diakses tanpa koneksi internet?",
+            answer = "Beberapa data yang telah dimuat sebelumnya dapat dilihat secara offline, namun untuk pembaruan data masuk, pendaftaran antrian, dan sinkronisasi tetap memerlukan koneksi internet."
+        )
     )
 
-    var expandedIndex by remember { mutableStateOf(0) } // default buka item pertama
+    var expandedIndex by remember { mutableStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -110,12 +121,23 @@ fun FAQScreen(
 
 @Composable
 fun FAQCard(item: FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isExpanded) Color(0xFFFFFFFF) else Color(0xFFE6F8FE),
+        label = "CardBackgroundAnimation"
+    )
+
+    val arrowRotationState by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "ArrowRotationAnimation"
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .animateContentSize(),
         colors = CardDefaults.cardColors(
-            containerColor = if (isExpanded) Color(0xFFFFFFFF) else Color(0xFFE6F8FE)
+            containerColor = backgroundColor
         ),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(2.dp)
@@ -133,8 +155,9 @@ fun FAQCard(item: FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.ArrowBack else Icons.Default.ArrowDropDown,
-                    contentDescription = null
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    modifier = Modifier.rotate(arrowRotationState)
                 )
             }
 
@@ -154,6 +177,7 @@ fun FAQCard(item: FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
 @Composable
 fun PreviewFAQScreen() {
     MaterialTheme {
-//        FAQScreen()
+        val navController = rememberNavController()
+        FAQScreen(navController)
     }
 }
